@@ -31,6 +31,11 @@ def create_users_table(conn):
 # Route to render the HTML form
 @app.route('/')
 def home():
+    return render_template('main.html')
+
+# Route to render the registration form
+@app.route('/register')
+def register():
     return render_template('register.html')
 
 # Route to handle form submission and store data in the database
@@ -68,7 +73,7 @@ def login():
         for row in rows:
             print(row)
 
-        return message
+        return render_template('redirect.html')
     else:
         return 'Method not allowed'
 
