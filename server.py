@@ -23,6 +23,9 @@ def create_users_table(conn):
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL,
                 password TEXT NOT NULL
+                firstName TEXT NOT NULL
+                lastName TEXT NOT NULL
+                email TEXT NOT NULL
             )
         """)
         print("Users table created successfully")
@@ -60,6 +63,9 @@ def register_action():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        firstName = request.form['firstName']
+        lastName = request.form['lastName']
+        email = request.form['email']
 
         # Connect to the database
         conn = create_connection()
@@ -79,7 +85,7 @@ def register_action():
         else:
             try:
                 # Insert data into the users table
-                cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+                cursor.execute("INSERT INTO users (username, password, firstName, lastName, email) VALUES (?, ?, ?, ?, ?)", (username, password, firstName, lastName, email))
                 conn.commit()
                 message = "Data inserted successfully"
             except sqlite3.Error as e:
