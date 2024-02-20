@@ -28,7 +28,7 @@ def create_users_table(conn):
                 email TEXT NOT NULL
             )
         """)
-        print("Users table created successfully")
+        print("Users table created successfully!")
     except sqlite3.Error as e:
         print(f"Error creating users table: {e}")
 
