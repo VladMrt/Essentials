@@ -1,8 +1,135 @@
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash
+from openfoodfacts import API, APIVersion, Country, Environment, Flavor
+import requests
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 app.secret_key = 'albinute'
+
+#                       #
+#  OPEN FOOD FACTS API  #
+#        START          #
+
+api = API(
+    # user_agent="MyWebApp/1.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
+    username=None,
+    password=None,
+    country=Country.world,
+    flavor=Flavor.off,
+    version=APIVersion.v2,
+    environment=Environment.org,
+)
+
+def search_products_by_keyword(keyword):
+    base_url = "https://world.openfoodfacts.org/cgi/search.pl"
+    params = {
+        "search_terms": keyword,
+        "page_size": 5,
+        "json": 1
+    }
+    
+    response = requests.get(base_url, params=params)
+    if response.status_code == 200:
+        search_results = response.json()
+        return search_results.get('products', [])
+    else:
+        print("Error:", response.status_code)
+        return []
+
+def get_product_name(product_id):
+    url = f"https://world.openfoodfacts.org/api/v0/product/{product_id}.json"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        if 'product' in data and 'product_name' in data['product']:
+            return data['product']['product_name']
+    return None
+
+@app.route('/search_product', methods = ['POST'])
+def search_product():
+    search_results = search_products_by_keyword(request.form['product'])
+    for item in search_results:
+        print("Products:", item.get('product_name'))
+    # if search_results:
+    #     products = search_results['products']
+    #     if products:
+    #         product = products[0]
+    #         name = product.get('product_name')
+    #         nutrition = product.get('nutrition_grades_tags')
+    #         ingredients = product.get('ingredients_text')
+    #         image = product.get('image_url')
+    #         print("Product Name:", name)
+    #         print("Ingredients:", nutrition)
+    #         print("Nutrition Facts:", ingredients)
+    #         return render_template('product.html', name=name, ingredients=ingredients, nutrition=nutrition, image=image)
+    #     else:
+    #         print("No products found with the given name.")
+    #         return render_template('test_off_api.html')
+    return render_template('search_product.html', search_results=search_results)
+    
+
+@app.route('/product_details')
+def product_details():
+    # Assuming you have the HTML content passed from a request or stored somewhere
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>test</title>
+    </head>
+    <body>
+        <h1>L</h1>
+        <p>aaaaaaaaaaaaa</p>
+        <div class="product-images">
+            {% for product in search_results %}
+                <a href='/product_details?product_id={{ product.product_id }}'>
+                <img src="{{ product.image_url }}" alt="{{ product.product_name }}">
+            </a>
+            {% endfor %}
+        </div>
+    </body>
+    </html>
+    """
+    
+    # Parse the HTML
+    soup = BeautifulSoup(html_content, 'html.parser')
+
+    # Find the product div
+    product_div = soup.find('div', class_='product-images')
+
+    product_id = None  # Initialize product_id to None
+
+    # Extract product ID from the href attribute of the anchor tag
+    if product_div:
+        product_link = product_div.find('a')  # Find the first anchor tag within the product div
+        if product_link:
+            href = product_link.get('href')
+            product_id = request.args.get('product_id')  # Extract product_id from the href query parameter
+            print("Product ID:", product_id)
+        else:
+            print("Product link not found")
+    else:
+        print("Product div not found")
+    
+    product = get_product_name(product_id)
+    test = search_products_by_keyword(product)
+    product = test[0]
+
+    name = product.get('product_name')
+    nutrition = product.get('nutrition_grades_tags')
+    ingredients = product.get('ingredients_text')
+    image = product.get('image_url')
+
+    return render_template('product_details.html', name=name, ingredients=ingredients, nutrition=nutrition, image=image)
+
+
+#                       #
+#  OPEN FOOD FACTS API  #
+#          END          #
+
 
 # Function to create a database connection
 def create_connection():
@@ -126,14 +253,10 @@ def login_action():
                 return render_template('homeLoggedIn.html', username=username)
             else:
                 conn.close()
-                flash('Incorrect password. Please try again.', 'error')
+                flash('Incorrect username or password. Please try again.', 'error')
                 printDB()
                 return render_template('login.html')
-        else:
-            conn.close()
-            flash('Username not found. Please register.', 'error')
-            printDB()
-            return render_template('register.html')
+
     else:
         return 'Method not allowed'
 
