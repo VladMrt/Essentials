@@ -1,0 +1,44 @@
+.navlinks{
+    background-color: #8A9A5B;
+    color: #e8dfe0;
+    display: flex;
+    margin-left: 0rem;
+    border: none;
+    height: 6rem;
+    font-size: 40px;
+    /* align-content: flex-start; */
+    margin-bottom: 10rem;
+    position: relative;
+   display: inline-block;
+}
+
+body {
+    background-color: #8A9A5B;
+}
+
+#logo {
+    margin-right: 0rem;
+    size-adjust: 120px;
+    height: 10rem;
+    float:left;
+    margin-bottom: 10rem;
+    
+}
+
+.hero {
+    
+    margin-top: 1rem;
+   margin-left: 1rem;
+   text-align: center;
+   color: #e8dfe0;
+   font-size: 25px;
+}
+
+#Account {
+    margin-top: 1rem;
+    margin-bottom: 0;
+    float: right;
+    text-align: center;
+}
+
+
