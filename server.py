@@ -135,7 +135,7 @@ def product_details():
 def create_connection():
     conn = None
     try:
-        conn = sqlite3.connect('user_credentials.db')
+        conn = sqlite3.connect('user_credentials.sql')
         print("Connection to SQLite DB successful")
     except sqlite3.Error as e:
         print(f"Error connecting to SQLite DB: {e}")
