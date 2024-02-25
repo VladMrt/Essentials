@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from openfoodfacts import API, APIVersion, Country, Environment, Flavor
 import requests
 from bs4 import BeautifulSoup
@@ -149,27 +149,34 @@ def create_users_table(conn):
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL,
-                password TEXT NOT NULL
-                firstName TEXT NOT NULL
-                lastName TEXT NOT NULL
-                email TEXT NOT NULL
+                password TEXT NOT NULL,
+                firstName TEXT NOT NULL,
+                lastName TEXT NOT NULL,
+                email TEXT NOT NULL,
+                dietary_preferences TEXT NOT NULL,
+                allergens TEXT NOT NULL,
+                avatar TEXT NOT NULL
             )
         """)
         print("Users table created successfully!")
     except sqlite3.Error as e:
         print(f"Error creating users table: {e}")
 
-# Route to render the HTML form
+# Route to render the home page
 @app.route('/')
 def home():
-    return render_template('home.html')
+    if 'username' in session:
+        loggedIn = True
+        return render_template('home.html', username=session['username'], loggedIn=loggedIn)
+    else:
+        return render_template('home.html', loggedIn=False)
 
-# Route to render the registration form
+# Route to render the registration page
 @app.route('/register')
 def register():
     return render_template('register.html')
 
-# Route to render the login form
+# Route to render the login page
 @app.route('/login')
 def login():
     return render_template('login.html')
@@ -185,6 +192,11 @@ def printDB():
     for row in rows:
         print(row)
 
+conn = create_connection()
+create_users_table(conn)
+printDB()
+conn.close()
+
 # Route to handle registration submission and store data in the database
 @app.route('/register_action', methods=['POST'])
 def register_action():
@@ -194,12 +206,11 @@ def register_action():
         firstName = request.form['firstName']
         lastName = request.form['lastName']
         email = request.form['email']
+        dietary_preferences = request.form['dietary_preferences']
+        allergens = request.form['allergens']
+        avatar = request.form['avatar']
 
-        # Connect to the database
         conn = create_connection()
-
-        # Create the users table if it doesn't exist
-        create_users_table(conn)
 
         # Check if the username already exists
         cursor = conn.cursor()
@@ -213,12 +224,10 @@ def register_action():
         else:
             try:
                 # Insert data into the users table
-                cursor.execute("INSERT INTO users (username, password, firstName, lastName, email) VALUES (?, ?, ?, ?, ?)", (username, password, firstName, lastName, email))
+                cursor.execute("INSERT INTO users (username, password, firstName, lastName, email, dietary_preferences, allergens, avatar) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (username, password, firstName, lastName, email, dietary_preferences, allergens, avatar))
                 conn.commit()
-                message = "Data inserted successfully"
             except sqlite3.Error as e:
                 conn.rollback()
-                message = f"Error inserting data: {e}"
             finally:
                 conn.close()
 
@@ -251,7 +260,8 @@ def login_action():
             if password == existing_user[2]:
                 conn.close()
                 printDB()
-                return render_template('homeLoggedIn.html', username=username)
+                session['username'] = username
+                return render_template('home.html', username=username, loggedIn = True)
             else:
                 conn.close()
                 flash('Incorrect username or password. Please try again.', 'error')
@@ -261,6 +271,41 @@ def login_action():
     else:
         return 'Method not allowed'
 
+#Change profile info
+@app.route('/change_info_action', methods=['POST'])
+def changeInfo():
+    # Extract new information from the form
+    new_firstName = request.form['newFirstName']
+    new_lastName = request.form['newLastName']
+    new_username = request.form['newUsername']
+    new_allergens = request.form['newAllergens']
+    new_dietary_preferences = request.form['newDietary_preferences']
+    new_allergens = request.form['newAllergens']
+    new_avatar = request.form['newAvatar']
+        
+    # Check if the user is logged in
+    if 'username' in session:
+        username = session['username']
+            
+        # Connect to the database
+        conn = create_connection()
+        cursor = conn.cursor()
+            
+        try:
+            # Update the user's information in the database
+            cursor.execute("UPDATE users SET firstName=?, lastName=?, username=?, allergens=?, dietary_preferences=?, avatar=? WHERE username=?", 
+                            (new_firstName, new_lastName, new_username, new_allergens, new_dietary_preferences, new_avatar, username))
+            conn.commit()
+            message = "User information updated successfully"
+            print(message)
+            printDB()
+        except sqlite3.Error as e:
+            conn.rollback()
+            message = f"Error updating user information: {e}"
+        finally:
+            conn.close()
+    return myaccount()
+
 # Redirect route
 @app.route('/redirect')
 def redirect():
@@ -269,7 +314,28 @@ def redirect():
 # My account route
 @app.route('/myaccount')
 def myaccount():
-    return render_template('myaccount.html')
+    if 'username' in session:
+        # Get the username from the session
+        username = session['username']
 
+        # Connect to the database
+        conn = create_connection()
+        cursor = conn.cursor()
+
+        # Retrieve user information from the database based on the username
+        cursor.execute("SELECT firstName, lastName, username, allergens, dietary_preferences, avatar FROM users WHERE username=?", (username,))
+        user_data = cursor.fetchone()  # Fetch the first row
+        if user_data:
+            # Unpack the user data
+            firstName, lastName, username, allergens, dietary_preferences, avatar = user_data
+            print(firstName)
+            print(lastName)
+            print(username)
+            print(allergens)
+            print(dietary_preferences)
+
+            # Render the template with user data
+            return render_template('myaccount.html', firstName=firstName, lastName=lastName, username=username, allergens=allergens, dietary_preferences=dietary_preferences, avatar=avatar)
+        
 if __name__ == '__main__':
     app.run(debug=True)

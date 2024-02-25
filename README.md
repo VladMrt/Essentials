@@ -1,5 +1,4 @@
-da salut
-command to run:
+commands to run:
 
 pip install openfoodfacts
 
