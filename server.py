@@ -174,6 +174,7 @@ def register():
 def login():
     return render_template('login.html')
 
+
 def printDB():
     conn = create_connection()
     cursor = conn.cursor()
@@ -264,6 +265,11 @@ def login_action():
 @app.route('/redirect')
 def redirect():
     return render_template('redirect.html')
+
+# My account route
+@app.route('/myaccount')
+def myaccount():
+    return render_template('myaccount.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
