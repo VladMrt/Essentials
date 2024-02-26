@@ -271,6 +271,12 @@ def login_action():
     else:
         return 'Method not allowed'
 
+#Log out function
+@app.route('/logout_action')
+def logOut():
+    session.clear()
+    return render_template('home.html')
+
 #Change profile info
 @app.route('/change_info_action', methods=['POST'])
 def changeInfo():
