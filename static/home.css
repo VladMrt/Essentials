@@ -21,17 +21,29 @@ body {
     size-adjust: 120px;
     height: 10rem;
     float:left;
-    margin-bottom: 10rem;
+    margin-bottom: 50rem;
     
 }
 
 .hero {
     
     margin-top: 1rem;
-   margin-left: 1rem;
+   margin-left: 0rem;
    text-align: center;
    color: #e8dfe0;
-   font-size: 25px;
+   font-size: 30px;
+   align-items: center;
+   display: block;
+
+
+}
+.search_bar{
+    display: block;
+    padding-top: 4rem;
+    font-size: 40px;
+    margin-left: 10rem;
+    
+    text-align: center;
 }
 
 #Account {
@@ -41,4 +53,24 @@ body {
     text-align: center;
 }
 
+.space_header{
+    display: block;
+}
 
+#login_p{
+    text-align: center;
+}
+
+.sbut{
+    padding: 20px 35px;
+    border-radius: 10px;
+   font-size: 15px;
+    display: inline-block;
+}
+
+.search{
+    padding: 20px 35px;
+    margin-bottom: 1rem;
+    border-radius: 20px;
+    font-size: 18px;
+}
