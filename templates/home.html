@@ -10,6 +10,7 @@
   </head>
   <body>
     <img class="navlinks" src="/static/logo.svg" id="logo" />
+    
 
     {% if loggedIn %}
 
@@ -24,14 +25,15 @@
     </div>
 
     {% else %}
-    <p class="hero"><a href="/login">Log in</a> or <a href="/register">Register</a></p>
+    <p  id="login_p" class="hero"><a href="/login">Log in</a> or <a href="/register">Register</a></p>
     {% endif %}
     <form action="/search_product" method="post">
-      <div>
-        <label for="product">product:</label>
-        <input type="product" id="product" name="product" required />
+      <div class="search_bar">
+        <!-- <label style="font-size: 20px; " for="product">product:</label> -->
+        <input class="search" type="product" id="product" name="product" required />
+      
+      <button class="sbut" type="submit">Search</button>
       </div>
-      <button type="submit">Search</button>
     </form>
   </body>
 </html>
