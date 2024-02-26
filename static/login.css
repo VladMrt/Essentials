@@ -1,0 +1,101 @@
+.logo {
+    position: absolute;
+    left: 20px;
+    top:80px;
+    width: 500px;
+    height: auto;
+  }
+  body{
+    background-color: #dab692;
+  }
+  form {
+    position: relative;
+    max-width: 500px;
+    margin: 120px auto 0;
+    background-color: #8f5b34;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  label {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+  }
+  
+  label img {
+    margin-right: 10px;
+    width: 30px; 
+    height: auto;
+  }
+  
+  form div {
+    width: 100%;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  input[type="text"],
+  input[type="password"] {
+    width: 95%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #8a9a5b;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #8a9a5b;
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  .alert {
+    text-align: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .alert-success {
+    background-color: #90EE90; /* Light green */
+    color: #006400; /* Dark green */
+  }
+  
+  .alert-error {
+    background-color: #FFA07A; /* Light salmon */
+    color: #8B0000; /* Dark red */
+  }
+  .home-button {
+    display: inline-block;
+    background-color: #8a9a5b;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    color: white;
+    padding: 16px 30px; /* Adjust padding to make the button larger */
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  .home-button:hover {
+    background-color: #8a9a5b;
+  }

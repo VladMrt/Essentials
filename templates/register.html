@@ -3,11 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="/static/register.css" />
     <title>Register</title>
   </head>
   <body>
-    <h1>Register</h1>
+    <img class="logo" src="/static/logo.svg" alt="Company Logo" />
     <form action="/register_action" method="post">
+      <h1>Register</h1>
+      <a href="/redirect" class="home-button">Home</a>
       <div>
         <label for="firstName">First Name:</label>
         <input type="firstName" id="firstName" name="firstName" required />
@@ -30,7 +33,12 @@
       </div>
       <div>
         <label for="dietary_preferences">Dietary Preferences:</label>
-        <input type="text" id="dietary_preferences" name="dietary_preferences" required />
+        <input
+          type="text"
+          id="dietary_preferences"
+          name="dietary_preferences"
+          required
+        />
       </div>
       <div>
         <label for="allergens">Allergens:</label>

@@ -6,27 +6,29 @@
     <title>Main Page</title>
     <link rel="icon" type="image/x-icon" href="/static/logo.svg" />
     <link rel="stylesheet" href="/static/home.css" />
-    <link rel="stylesheet" type="text/css" href="/static/homeProfile.css">
+    <link rel="stylesheet" type="text/css" href="/static/homeProfile.css" />
   </head>
   <body>
     <img class="navlinks" src="/static/logo.svg" id="logo" />
 
     {% if loggedIn %}
 
-    <div style="text-align: right;"class="dropdown-container">
+    <div style="text-align: right" class="dropdown-container">
       <div class="dropdown">
-          <button onclick="toggleDropdown()" class="dropbtn">{{username}}</button>
-          <div id="dropdownContent" class="dropdown-content left">
-              <a href="/myaccount">Profile</a>
-              <a href="#">Logout</a>
-          </div>
+        <button onclick="toggleDropdown()" class="dropbtn">{{username}}</button>
+        <div id="dropdownContent" class="dropdown-content left">
+          <a href="/myaccount">Profile</a>
+          <a href="#">Logout</a>
         </div>
+      </div>
     </div>
 
     {% else %}
-    <p class="hero"><a href="/login">Log in</a> or <a href="/register">Register</a></p>
+    <p class="hero">
+      <a href="/login">Log in</a> or <a href="/register">Register</a>
+    </p>
     {% endif %}
-    
+
     <br />
     <br />
 
@@ -45,7 +47,7 @@
     <br />
     <br />
     <br />
-    
+
     <form action="/search_product" method="post">
       <div>
         <label for="product">product:</label>
