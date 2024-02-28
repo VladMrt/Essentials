@@ -20,8 +20,22 @@
           </div>
         </div>
       </div>
+      <div class="navlinks">
+      <form action="/search_product" method="post">
+        <div class="search_bar">
+          <!-- <label style="font-size: 20px; " for="product">product:</label> -->
+          <input
+            class="search"
+            type="product"
+            id="product"
+            name="product"
+            required
+          />
   
-
+          <button class="sbut" type="submit">Search</button>
+        </div>
+      </form>
+    </div>
     <h1>Product Detail</h1>
     <img src = '{{ image }}'>
     <p>{{ name }}</p>
