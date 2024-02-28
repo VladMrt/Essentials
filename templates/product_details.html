@@ -7,6 +7,19 @@
     <link rel="icon" type="image/x-icon" href="/static/logo.svg" />
 </head>
 <body>
+    <img class="navlinks" src="/static/logo.svg" id="logo" />
+
+    <div style="text-align: right" class="dropdown-container">
+        <div class="dropdown">
+          <button onclick="toggleDropdown()" class="dropbtn">{{username}}</button>
+          <div id="dropdownContent" class="dropdown-content left">
+            <a href="/myaccount">Profile</a>
+            <a href="/logout_action">Logout</a>
+          </div>
+        </div>
+      </div>
+  
+
     <h1>Product Detail</h1>
     <img src = '{{ image }}'>
     <p>{{ name }}</p>

@@ -8,6 +8,17 @@
     <title>Edit Profile</title>
   </head>
   <body>
+    <img class="navlinks" src="/static/logo.svg" id="logo" />
+
+    <div style="text-align: right" class="dropdown-container">
+        <div class="dropdown">
+          <button onclick="toggleDropdown()" class="dropbtn">{{username}}</button>
+          <div id="dropdownContent" class="dropdown-content left">
+            <a href="/myaccount">Profile</a>
+            <a href="/logout_action">Logout</a>
+          </div>
+        </div>
+      </div>
     <a href="/redirect" class="home-button">Home</a>
     <div class="container">
       <div class="profile-header">
