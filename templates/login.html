@@ -6,17 +6,19 @@
     <link rel="stylesheet" href="/static/home.css" />
     <link rel="stylesheet" type="text/css" href="/static/homeProfile.css" />
     <title>Log In</title>
-    <a href="/redirect" class="home-button">Home</a>
+    
   </head>
   <body>
+    <div class="top-bar">
     <img class="navlinks" src="/static/logo.svg" id="logo" />
-
+ <a href="/redirect"  class="home-button">Home</a>
    
     {% with messages = get_flashed_messages(with_categories=true) %} {% if
     messages %} {% for category, message in messages %}
     <div class="alert alert-{{ category }}">{{ message }}</div>
     {% endfor %} {% endif %} {% endwith %}
-    <img class="logo" src="/static/logo.svg" alt="Company Logo" />
+    <!-- <img class="logo" src="/static/logo.svg" alt="Company Logo" /> -->
+   </div>
     <form action="/login_action" method="post">
       <h1>Log In</h1>
       <div>
@@ -29,5 +31,10 @@
       </div>
       <button type="submit">Log In</button>
     </form>
+    <div class="bottom-info">
+      <h2>Additional Information</h2>
+      <p>This is some additional information about your website.</p>
+  </div>
+
   </body>
 </html>
