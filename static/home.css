@@ -1,4 +1,4 @@
-.navlinks{
+/* .navlinks{
     background-color: #8A9A5B;
     color: #e8dfe0;
     display: flex;
@@ -6,7 +6,6 @@
     border: none;
     height: 6rem;
     font-size: 40px;
-    /* align-content: flex-start; */
     margin-bottom: 10rem;
     position: relative;
    display: inline-block;
@@ -38,14 +37,6 @@ body {
 
 
 }
-.search_bar{
-    display: block;
-    padding-top: 4rem;
-    font-size: 40px;
-    margin-left: 10rem;
-    
-    text-align: center;
-}
 
 #Account {
     margin-top: 1rem;
@@ -60,18 +51,67 @@ body {
 
 #login_p{
     text-align: center;
+} */
+.search-button {
+    background-color: transparent;
+    border: none;
+    padding: 0;
 }
 
-.sbut{
-    padding: 20px 35px;
-    border-radius: 10px;
-   font-size: 15px;
-    display: inline-block;
+.bottom-info {
+    background-color: #f0f0f0;
+    padding: 20px;
+    text-align: center;
 }
 
-.search{
-    padding: 20px 35px;
-    margin-bottom: 1rem;
-    border-radius: 20px;
-    font-size: 18px;
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    padding: 10px; 
+    background-color: #333;
+    color: #fff;
+    max-height: 100px;
 }
+
+.navlinks {
+    margin-right: 20px;
+    max-height: 100px; 
+}
+
+.group {
+    display: flex;
+    align-items: center;
+}
+
+.input {
+    font-family: "Montserrat", sans-serif;
+    height: 45px;
+    width: 300px; 
+    padding-left: 1rem;
+    box-shadow: 0 0 0 1.5px #2b2c37, 0 0 25px -17px #000;
+    border: 0;
+    border-radius: 12px;
+    background-color: #16171d;
+    outline: none;
+    color: #bdbecb;
+    transition: all 0.25s cubic-bezier(0.19, 1, 0.22, 1);
+    cursor: text;
+}
+
+.search-icon {
+    fill: #bdbecb;
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem; 
+}
+
+.dropdown-container {
+    margin-right: 20px; 
+}
+
+
+
+
+
+  

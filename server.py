@@ -123,7 +123,11 @@ def product_details():
     ingredients = product.get('ingredients_text')
     image = product.get('image_url')
 
-    return render_template('product_details.html', name=name, ingredients=ingredients, nutrition=nutrition, image=image)
+    if 'username' in session:
+        loggedIn = True
+    else: loggedIn = False
+
+    return render_template('product_details.html', name=name, ingredients=ingredients, nutrition=nutrition, image=image, loggedIn=loggedIn)
 
 
 #                       #
@@ -275,7 +279,7 @@ def login_action():
 @app.route('/logout_action')
 def logOut():
     session.clear()
-    return render_template('home.html')
+    return render_template('redirect.html')
 
 #Change profile info
 @app.route('/change_info_action', methods=['POST'])
