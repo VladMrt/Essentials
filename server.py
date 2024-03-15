@@ -66,7 +66,10 @@ def search_product():
     #     else:
     #         print("No products found with the given name.")
     #         return render_template('test_off_api.html')
-    return render_template('search_product.html', search_results=search_results)
+    if 'username' in session:
+        loggedIn = True
+    else: loggedIn = False
+    return render_template('search_product.html', search_results=search_results, username=session['username'], loggedIn=loggedIn)
     
 
 @app.route('/product_details')
@@ -122,13 +125,36 @@ def product_details():
     nutrition = product.get('nutrition_grades_tags')
     ingredients = product.get('ingredients_text')
     image = product.get('image_url')
+    
+    api_url = f"https://world.openfoodfacts.org/api/v0/product/{product_id}.json"
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        product_data = response.json().get('product', {})
+        allergens = product_data.get('allergens_tags', [])
+        calories = product_data.get('nutriments', {}).get('energy-kcal_100g', 'N/A')
+        
+        # Additional nutrition facts
+        fat = product_data.get('nutriments', {}).get('fat_100g', 'N/A')
+        carbohydrates = product_data.get('nutriments', {}).get('carbohydrates_100g', 'N/A')
+        proteins = product_data.get('nutriments', {}).get('proteins_100g', 'N/A')
+        fiber = product_data.get('nutriments', {}).get('fiber_100g', 'N/A')
+        sugar = product_data.get('nutriments', {}).get('sugars_100g', 'N/A')
+        salt = product_data.get('nutriments', {}).get('salt_100g', 'N/A')
+    else:
+        allergens = []
+        calories = 'N/A'
+        fat = 'N/A'
+        carbohydrates = 'N/A'
+        proteins = 'N/A'
+        fiber = 'N/A'
+        sugar = 'N/A'
+        salt = 'N/A'
 
     if 'username' in session:
         loggedIn = True
     else: loggedIn = False
 
-    return render_template('product_details.html', name=name, ingredients=ingredients, nutrition=nutrition, image=image, loggedIn=loggedIn)
-
+    return render_template('product_details.html', name=name, ingredients=ingredients, nutrition=nutrition, image=image, loggedIn=loggedIn, username=session.get('username'), allergens=allergens, calories=calories, fat=fat, carbohydrates=carbohydrates, proteins=proteins, fiber=fiber, sugar=sugar, salt=salt)
 
 #                       #
 #  OPEN FOOD FACTS API  #

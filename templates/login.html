@@ -10,7 +10,9 @@
   </head>
   <body>
     <div class="top-bar">
-    <img class="navlinks" src="/static/logo.svg" id="logo" />
+      <a href="/redirect">
+        <img class="navlinks" src="/static/logo.svg" id="logo" width="200" height="100" alt="Main Page">
+      </a>
  <a href="/redirect"  class="home-button">Home</a>
    
     {% with messages = get_flashed_messages(with_categories=true) %} {% if
