@@ -13,7 +13,7 @@
     <div class="top-bar">
 
         <a href="/redirect">
-            <img class="navlinks" src="/static/logo.svg" id="logo" width="200" height="100" alt="Main Page">
+            <img class="navlinks" src="/static/logo.svg" id="logo" style="max-width: 50%;" alt="Main Page">
           </a>
       
       <form action="/search_product" method="post" >
@@ -55,7 +55,39 @@
   </div>
   </div>
 
-  
+  <div class="heading">Featured products</div>
+        <div class="container">
+            <div class="product1">
+                <a href='/product_details?product_id={{ 7613035648463 }}'>
+                <img src='https://images.openfoodfacts.org/images/products/761/303/564/8463/front_fr.106.400.jpg'
+                    alt="product1">
+                    </a>
+                <div class="desc">
+                    <p style="margin-top: 10px;">{{product1_name}}</p>
+                    <div class="horz"></div>
+                </div>
+            </div>
+            <div class="product2">
+                <a href='/product_details?product_id={{ 8722700125174 }}'>
+                <img src='https://images.openfoodfacts.org/images/products/872/270/012/5174/front_fr.191.400.jpg'
+                    alt="product2">
+                    </a>
+                <div class="desc">
+                    <p style="margin-top: 10px;">{{product2_name}}</p>
+                    <div class="horz"></div>
+                </div>
+            </div>
+            <div class="product3">
+                <a href='/product_details?product_id={{ 8076809513753 }}'>
+                <img src='https://images.openfoodfacts.org/images/products/807/680/951/3753/front_en.245.400.jpg'
+                    alt="product3">
+                    </a>
+                <div class="desc">
+                    <p style="margin-top: 10px;">{{product3_name}}</p>
+                    <div class="horz"></div>
+                </div>
+            </div>
+        </div>
 
    <div class="bottom-info">
         <h2>Additional Information</h2>

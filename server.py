@@ -68,8 +68,12 @@ def search_product():
     #         return render_template('test_off_api.html')
     if 'username' in session:
         loggedIn = True
-    else: loggedIn = False
-    return render_template('search_product.html', search_results=search_results, username=session['username'], loggedIn=loggedIn)
+        return render_template('search_product.html', search_results=search_results, username=session['username'], loggedIn=loggedIn)
+    else:
+        loggedIn = False
+        return render_template('search_product.html', search_results=search_results, loggedIn=loggedIn)
+
+    
     
 
 @app.route('/product_details')
@@ -161,7 +165,6 @@ def product_details():
 #          END          #
 
 
-# Function to create a database connection
 def create_connection():
     conn = None
     try:
@@ -171,7 +174,6 @@ def create_connection():
         print(f"Error connecting to SQLite DB: {e}")
     return conn
 
-# Function to create the users table if it doesn't exist
 def create_users_table(conn):
     try:
         cursor = conn.cursor()
@@ -192,21 +194,21 @@ def create_users_table(conn):
     except sqlite3.Error as e:
         print(f"Error creating users table: {e}")
 
-# Route to render the home page
 @app.route('/')
 def home():
+    product1_name="Pâte à pizza fine et rectangulaire"
+    product2_name="Amora sce burger 260g" 
+    product3_name="Pesto alla Genovese"
     if 'username' in session:
         loggedIn = True
-        return render_template('home.html', username=session['username'], loggedIn=loggedIn)
+        return render_template('home.html', username=session['username'], loggedIn=loggedIn, product1_name=product1_name, product2_name=product2_name, product3_name=product3_name)
     else:
         return render_template('home.html', loggedIn=False)
 
-# Route to render the registration page
 @app.route('/register')
 def register():
     return render_template('register.html')
 
-# Route to render the login page
 @app.route('/login')
 def login():
     return render_template('login.html')
@@ -227,7 +229,6 @@ create_users_table(conn)
 printDB()
 conn.close()
 
-# Route to handle registration submission and store data in the database
 @app.route('/register_action', methods=['POST'])
 def register_action():
     if request.method == 'POST':
@@ -291,7 +292,7 @@ def login_action():
                 conn.close()
                 printDB()
                 session['username'] = username
-                return render_template('home.html', username=username, loggedIn = True)
+                return home()
             else:
                 conn.close()
                 flash('Incorrect username or password. Please try again.', 'error')

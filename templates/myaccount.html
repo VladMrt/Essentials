@@ -11,10 +11,8 @@
   </head>
   <body>
     <div class="top-bar">
-
-   
       <a href="/redirect">
-        <img class="navlinks" src="/static/logo.svg" id="logo" width="200" height="100" alt="Main Page">
+        <img class="navlinks" src="/static/logo.svg" id="logo" style="max-width: 50%;" alt="Main Page">
       </a>
 
     <div style="text-align: right" class="dropdown-container">
@@ -27,69 +25,55 @@
         </div>
       </div>
     </div>
-    <a href="/redirect" style="margin-left: 6rem;" class="home-button">Home</a>
-    <div class="container">
-      <div class="profile-header">
-        <img src="https://via.placeholder.com/150" alt="Profile Picture" />
-        <h1>Edit Profile</h1>
-      </div>
-      <form action="/change_info_action" method="post">
 
-        <label for="newFirstName">First Name:</label>
-        <input
-          type="text"
-          id="newFirstName"
-          name="newFirstName"
-          placeholder= "{{ firstName }}"
-          value="{{ firstName }}"
-        />
-
-        <label for="newLastName">Last Name:</label>
-        <input
-          type="text"
-          id="newLastName"
-          name="newLastName"
-          placeholder= "{{ lastName }}"
-          value="{{ lastName }}"
-        />
-
-        <label for="newUsername">Username:</label>
-        <input
-          type="text"
+    <div class="center">
+    <form class="form">
+      <p class="title">My account </p>
+      <p class="message">Change your profile</p>
+          <div class="flex">
+          <label>
+              <input class="input" type="text"
+              id="newFirstName"
+              name="newFirstName"
+              value="{{ firstName }}">
+              <span>Firstname</span>
+          </label>
+  
+          <label>
+              <input class="input" type="text"
+              id="newLastName"
+              name="newLastName"
+              value="{{ lastName }}">
+              <span>Lastname</span>
+          </label>
+      </div>  
+              
+      <label>
+          <input class="input" type="text"
           id="newUsername"
           name="newUsername"
-          placeholder= "{{ username }}"
-          value="{{ username }}"
-        />
-
-        <label for="newAllergens">Allergens:</label>
-        <textarea
+          value="{{ username }}">
+          <span>Username</span>
+      </label> 
+          
+      <label>
+          <input class="input" type="text"
           id="newAllergens"
           name="newAllergens"
-          placeholder= "{{ allergens }}"
-          value="{{ allergens }}"
-        ></textarea>
-
-        <label for="newDietary_preferences">Dietary preferences:</label>
-        <textarea
+          value="{{ allergens }}">
+          <span>Allergens</span>
+      </label>
+      <label>
+          <input class="input" type="text"
           id="newDietary_preferences"
           name="newDietary_preferences"
-          placeholder= "{{ dietary_preferences }}"
-          value="{{ dietary_preferences }}"
-        ></textarea>
+          value="{{ dietary_preferences }}">
+          <span>Dietary preferences</span>
+      </label>
+      <button href="/myaccount" class="submit">Submit</button>
+  </form>
+</div>
 
-        <label for="newAvatar">Avatar URL:</label>
-        <input
-          type="text"
-          id="newAvatar"
-          name="newAvatar"
-          placeholder= "{{ avatar }}"
-          value="{{ avatar }}"
-        />
-
-        <input href="/myaccount"; type="submit" value="Save Changes" />
-      </form>
-    </div>
     <div class="bottom-info">
       <h2>Additional Information</h2>
       <p>This is some additional information about your website.</p>

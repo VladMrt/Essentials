@@ -59,10 +59,18 @@ body {
 }
 
 .bottom-info {
+    position: fixed;
     bottom: 0;
-    background-color: #f0f0f0;
+    left: 0;
+    width: 100%;
+    background-color: #f2f2f2;
     padding: 20px;
-    text-align: center;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center; 
 }
 
 .top-bar {
@@ -78,6 +86,7 @@ body {
 .navlinks {
     margin-right: 20px;
     max-height: 100px; 
+
 }
 
 .group {
@@ -111,7 +120,81 @@ body {
     margin-right: 20px; 
 }
 
+*{
+    box-sizing: border-box;
+    text-transform: capitalize;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.heading{
+    color: white;
+    background-color: #2f6573;
+    width: 200px;
+    height: 45px;
+    font-size: larger;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 165px;
+    margin-bottom: 20px;
+    
+}
+.container{
+    display: flex;
+    justify-content: center;
+    padding: 5px;
+}
+img{
+    height: 200px;
+    width: 196px;
+    margin-top: 2px;
+    object-fit: cover;
+}
+.horz{
+    position: absolute;
+    margin-top: 5px;
+    width: 180px;
+    height: 2px;
+    background-color: gray;
+    right: 8px;
+}
+.product1::after,.product2::after,.product2::before,.product3::after,.product4::after{
+    position: absolute;
+    color: #2f6573;
+    width: 55px;
+    height: 20px;
+    background-color: black;
+    top: 245px;
+    right: 75px;
+    text-align: center;
+}
 
+.circle{
+    position: relative;
+}
+.circle::after{
+    content: "sale!";
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 40px;
+    background-color: #e64602;
+    top: -10px;
+    left: -10px;
+    font-size: small;
+}
+
+.product1,.product2,.product3,.product4{
+    margin-right: 20px;
+    position: relative;
+    height: 280px;
+    width: 213px;
+    color: white;
+    background-color: black;
+    text-align: center;
+    border: solid #ddd 4px;
+}
 
 
 
