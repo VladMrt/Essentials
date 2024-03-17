@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Main Page</title>
+    <link rel="icon" type="image/x-icon" href="/static/logo.svg" />
+    <link rel="stylesheet" href="/static/home.css" />
+    <link rel="stylesheet" type="text/css" href="/static/homeProfile.css" /> 
+    <link rel="stylesheet" type="text/css" href="/static/cart.css" /> 
+    <link rel="stylesheet" type="text/css" href="/static/cartPage.css" /> 
+  </head>
+  <body>
+    
+    <div class="top-bar">
+        <a href="/redirect">
+            <img class="navlinks" src="/static/logo.svg" id="logo" style="max-width: 50%;" alt="Main Page">
+        </a>
+    
+        <form action="/search_product" method="post">
+            <div class="group">
+                <button type="submit" class="search-button">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" class="search-icon">
+                        <g>
+                            <path
+                                d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"
+                            ></path>
+                        </g>
+                    </svg>
+                </button>
+                <input 
+                    id="product"
+                    class="input"
+                    type="product"
+                    placeholder="Search a product..."
+                    name="product"
+                />
+            </div>
+        </form>
+    
+        <div class="btn-cart-container">
+            <a href='/viewCart'>
+            <button data-quantity="{{cart_elements}}" class="btn-cart">
+                <svg class="icon-cart" viewBox="0 0 24.38 30.52" height="30.52" width="24.38" xmlns="http://www.w3.org/2000/svg">
+                    <title>icon-cart</title>
+                    <path transform="translate(-3.62 -0.85)" d="M28,27.3,26.24,7.51a.75.75,0,0,0-.76-.69h-3.7a6,6,0,0,0-12,0H6.13a.76.76,0,0,0-.76.69L3.62,27.3v.07a4.29,4.29,0,0,0,4.52,4H23.48a4.29,4.29,0,0,0,4.52-4ZM15.81,2.37a4.47,4.47,0,0,1,4.46,4.45H11.35a4.47,4.47,0,0,1,4.46-4.45Zm7.67,27.48H8.13a2.79,2.79,0,0,1-3-2.45L6.83,8.34h3V11a.76.76,0,0,0,1.52,0V8.34h8.92V11a.76.76,0,0,0,1.52,0V8.34h3L26.48,27.4a2.79,2.79,0,0,1-3,2.44Zm0,0"></path>
+                </svg>
+                <span class="quantity"></span>
+            </button>
+        </a>
+        </div>
+    
+        {% if loggedIn %}
+        <div style="text-align: right" class="dropdown-container">
+            <div class="dropdown">
+                <button onclick="toggleDropdown()" class="dropbtn">{{username}}</button>
+                <div id="dropdownContent" class="dropdown-content left">
+                    <a href="/myaccount">Profile</a>
+                    <a href="/logout_action">Logout</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p class="hero">
+            <a href="/login">Log in</a> or <a href="/register">Register</a>
+        </p>
+        {% endif %}
+    </div>
+
+    <div class="receipt">
+
+      <div class="receipt__header">
+        <div class="receipt__logo-wrapper">
+          <img src="/static/logo.svg" class="receipt__logo">
+        </div>
+
+        <div class="receipt__header-info">
+          <span class="receipt__date">25.04.2016</span>
+          <span class="receipt__ref">0f-113</span>
+        </div>
+      </div>
+
+      <div class="receipt__subheader-wrapper">
+        <div class="receipt__subheader">
+          <h1 class="receipt__username">Hello,</h1>
+          <span class="receipt__help-text">you've selected {{ cart_lenght }} items:</span>
+        </div>
+      </div>
+
+      <div class="receipt__cart">
+        <h2 class="receipt__cart-title">Cart:</h2>
+        <ul class="receipt__cart-list">
+          {% set counter = namespace(value=1) %}
+          {% for item, details in cart.items() %}
+            <li class="receipt__cart-item">
+              <span class="receipt__index">{{ counter.value }}</span>
+              <span class="receipt__item-name">{{details['name']}}</span>
+              <span class="receipt__item-price">{{details['calories']}} kcal</span>
+            </li>
+            {% set counter.value = counter.value + 1 %}
+          {% endfor %}
+          <li class="receipt__cart-item">
+            <span class="receipt__item-name" style="font-weight: bold;">Our recommendations for a balanced diet:</span>
+          </li>
+          {% set counter = namespace(value=1) %}
+          <li class="receipt__cart-item">
+            <span class="receipt__index">{{ counter.value }}</span>
+            <span class="receipt__item-name" style="color:#029de0;">For more calories: {{recommendations['calories'][0]}}</span>
+          </li>
+          {% set counter.value = counter.value + 1 %}
+          <li class="receipt__cart-item">
+            <span class="receipt__index">{{ counter.value }}</span>
+            <span class="receipt__item-name" style="color:#029de0;">For more fat: {{recommendations['fat'][0]}}</span>
+          </li>
+          {% set counter.value = counter.value + 1 %}
+          <li class="receipt__cart-item">
+            <span class="receipt__index">{{ counter.value }}</span>
+            <span class="receipt__item-name" style="color:#029de0;">For more carbohydrates: {{recommendations['carbohydrates'][0]}}</span>
+          </li>
+          {% set counter.value = counter.value + 1 %}
+          <li class="receipt__cart-item">
+            <span class="receipt__index">{{ counter.value }}</span>
+            <span class="receipt__item-name" style="color:#029de0;">For more proteins: {{recommendations['proteins'][0]}}</span>
+          </li>
+          {% set counter.value = counter.value + 1 %}
+          <li class="receipt__cart-item">
+            <span class="receipt__index">{{ counter.value }}</span>
+            <span class="receipt__item-name" style="color:#029de0;">For more fiber: {{recommendations['fiber'][0]}}</span>
+          </li>
+          {% set counter.value = counter.value + 1 %}
+          <li class="receipt__cart-item">
+            <span class="receipt__index">{{ counter.value }}</span>
+            <span class="receipt__item-name" style="color:#029de0;">For more sugar: {{recommendations['sugar'][0]}}</span>
+          </li>
+          {% set counter.value = counter.value + 1 %}
+          <li class="receipt__cart-item">
+            <span class="receipt__index">{{ counter.value }}</span>
+            <span class="receipt__item-name" style="color:#029de0;">For more salt: {{recommendations['salt'][0]}}</span>
+          </li>
+          {% set counter.value = counter.value + 1 %}
+        </ul>
+      </div>
+    <div class="receipt__footer">
+      <img src="https://i.ibb.co/c8CQvBq/barcode.png" class="receipt__barcode">
+    </div>
+  </div>
+
+
+
+    <div class="bottom-info">
+        <h2>Additional Information</h2>
+        <p>This is some additional information about your website.</p>
+    </div>
+  
+  </body>
+</html>
