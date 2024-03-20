@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/static/home.css" />
     <link rel="stylesheet" type="text/css" href="/static/homeProfile.css" /> 
     <link rel="stylesheet" type="text/css" href="/static/cart.css" /> 
+    <link rel="stylesheet" type="text/css" href="/static/submitProduct.css" /> 
   </head>
   <body style="background-color: #8d9b6a;">
     
@@ -55,10 +56,7 @@
                 <button onclick="toggleDropdown()" class="dropbtn">{{username}}</button>
                 <div id="dropdownContent" class="dropdown-content left">
                     <a href="/myaccount">Profile</a>
-                    <a href="/new_product">Add a new product</a>
-                    {% if admin %}
-                    <a href="/check_submissions">Check Submissions</a>
-                    {% endif %}
+                    <a href="new_product">Add a new product</a>
                     <a href="/logout_action">Logout</a>
                 </div>
             </div>
@@ -70,63 +68,28 @@
         {% endif %}
     </div>
 </div>
-    
-  <div class="heading">Featured products</div>
-        <div class="container">
-            <div class="product1">
-                <a href='/product_details?product_id={{ 7613035648463 }}'>
-                <img src='https://images.openfoodfacts.org/images/products/761/303/564/8463/front_fr.106.400.jpg'
-                    alt="product1">
-                    </a>
-                <div class="desc">
-                    <p style="margin-top: 10px;">Pâte à pizza fine et rectangulaire</p>
-                    <div class="horz"></div>
-                </div>
-            </div>
-            <div class="product2">
-                <a href='/product_details?product_id={{ 8722700125174 }}'>
-                <img src='https://images.openfoodfacts.org/images/products/872/270/012/5174/front_fr.191.400.jpg'
-                    alt="product2">
-                    </a>
-                <div class="desc">
-                    <p style="margin-top: 10px;">Amora sce burger 260g</p>
-                    <div class="horz"></div>
-                </div>
-            </div>
-            <div class="product3">
-                <a href='/product_details?product_id={{ 8076809513753 }}'>
-                <img src='https://images.openfoodfacts.org/images/products/807/680/951/3753/front_en.245.400.jpg'
-                    alt="product3">
-                    </a>
-                <div class="desc">
-                    <p style="margin-top: 10px;">Pesto alla Genovese</p>
-                    <div class="horz"></div>
-                </div>
-            </div>
-        </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-   <div class="bottom-info">
-        <h2>Additional Information</h2>
-        <p>This is some additional information about your website.</p>
-    </div>
 
-  </body>
+<h1>Input info about the new product</h1>
+<form class="cf" action="/new_product_action" method="post">
+  <div class="half left cf">
+    <input type="text" id="name" name="name" placeholder="Name">
+    <input type="text" id="photo" name="photo" placeholder="Photo Url">
+    <input type="text" id="allergens" name="allergens" placeholder="Allergens">
+    <input type="text" id="calories" name="calories" placeholder="Calories">
+    <input type="text" id="fat" name="fat" placeholder="Fat">
+    <input type="text" id="carbohydrates" name="carbohydrates" placeholder="Carbohydrates">
+    <input type="text" id="proteins" name="proteins" placeholder="Proteins">
+    <input type="text" id="fiber" name="fiber" placeholder="Fiber">
+    <input type="text" id="sugar" name="sugar" placeholder="Sugar">
+    <input type="text" id="salt" name="salt" placeholder="Salt">
+  </div>
+  <input type="submit" value="Submit" id="submit">
+</form>
+
+<div class="bottom-info">
+    <h2>Additional Information</h2>
+    <p>This is some additional information about your website.</p>
+</div>
+
+</body>
 </html>

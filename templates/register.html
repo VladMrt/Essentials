@@ -43,33 +43,40 @@
 </div>
 
     <div class="center">
-    <form class="form">
+<form action="/register_action" method="post" class="form">
       <p class="title">Register </p>
       <p class="message">Sign up now and get full access to our app. </p>
           <div class="flex">
           <label>
-              <input class="input" type="text" placeholder="" required="">
+              <input class="input" type="text" id="firstName" name="firstName" placeholder="" required="">
               <span>Firstname</span>
           </label>
   
           <label>
-              <input class="input" type="text" placeholder="" required="">
+              <input class="input" type="text" id="lastName" name="lastName" placeholder="" required="">
               <span>Lastname</span>
           </label>
       </div>  
-              
       <label>
-          <input class="input" type="email" placeholder="" required="">
+        <input class="input" type="username" id="username" name="username" placeholder="" required="">
+        <span>Username</span>
+      </label>
+      <label>
+        <input class="input" type="password" id="password" name="password" placeholder="" required="">
+        <span>Password</span>
+      </label>
+      <label>
+          <input class="input" type="email" id="email" name="email" placeholder="" required="">
           <span>Email</span>
       </label> 
           
       <label>
-        <input class="input" type="dietary_preferences" placeholder="" required="">
+        <input class="input" type="dietary_preferences" name="dietary_preferences" id="dietary_preferences" placeholder="" required="">
         <span>Dietary Preferences</span>
       </label>
 
       <label>
-        <input class="input" type="allergens" placeholder="" required="">
+        <input class="input" type="allergens" id="allergens" name="allergens" placeholder="" required="">
         <span>Allergens</span>
       </label>
       <button type="submit" class="submit">Submit</button>

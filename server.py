@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, g
 from openfoodfacts import API, APIVersion, Country, Environment, Flavor
 import requests
 from bs4 import BeautifulSoup
@@ -46,18 +46,29 @@ def get_product_name(product_id):
             return data['product']['product_name']
     return None
 
+def search_products_in_db(keyword):
+    conn = create_connection_products()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM products WHERE name LIKE ? OR allergens LIKE ?", ('%' + keyword + '%', '%' + keyword + '%'))
+    search_results = cursor.fetchall()
+    conn.close()
+    return search_results
+
 @app.route('/search_product', methods = ['POST'])
 def search_product():
     search_results = search_products_by_keyword(request.form['product'])
-    for item in search_results:
-        print("Products:", item.get('product_name'))
+    
+    approved_products = search_products_in_db(request.form['product'])
+
+    all_products = search_results + approved_products
+
     cart_elements = len(session['cart'])
     if 'username' in session:
         loggedIn = True
-        return render_template('search_product.html', search_results=search_results, username=session['username'], loggedIn=loggedIn, cart_elements=cart_elements)
+        return render_template('search_product.html', search_results=all_products, username=session['username'], loggedIn=loggedIn, cart_elements=cart_elements)
     else:
         loggedIn = False
-        return render_template('search_product.html', search_results=search_results, loggedIn=loggedIn, cart_elements=cart_elements)
+        return render_template('search_product.html', search_results=all_products, loggedIn=loggedIn, cart_elements=cart_elements)
     
 
 @app.route('/product_details')
@@ -291,10 +302,8 @@ def viewCart():
     else: 
         loggedIn = False
         return render_template('cart.html', cart=cart, cart_lenght=cart_lenght, loggedIn=loggedIn, recommendations=recommendations)
-
-
     
-def create_connection():
+def create_connection_users():
     conn = None
     try:
         conn = sqlite3.connect('user_credentials.sql')
@@ -316,35 +325,135 @@ def create_users_table(conn):
                 email TEXT NOT NULL,
                 dietary_preferences TEXT NOT NULL,
                 allergens TEXT NOT NULL,
-                avatar TEXT NOT NULL
+                admin INTEGER NOT NULL
             )
         """)
         print("Users table created successfully!")
     except sqlite3.Error as e:
         print(f"Error creating users table: {e}")
 
-@app.route('/')
-def home():
-    if not session['cart']:
-        session['cart'] = {}
-    cart_elements = len(session['cart'])
+
+def create_table_products(conn):
+    try:
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS products (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                photo TEXT,
+                allergens TEXT,
+                calories TEXT,
+                fat TEXT,
+                carbohydrates TEXT,
+                proteins TEXT,
+                fiber TEXT,
+                sugar TEXT,
+                salt TEXT,
+                approved INTEGER NOT NULL
+            )
+        ''')
+        conn.commit()
+        print("Table 'products' Created Successfully")
+    except sqlite3.Error as e:
+        print(e)
+
+def create_connection_products():
+    conn = None
+    try:
+        conn = sqlite3.connect('products.sql')
+        print("SQLite Database Connection Established")
+        return conn
+    except sqlite3.Error as e:
+        print(e)
+    return conn
+
+@app.route('/new_product_action', methods=['POST'])
+def new_product_action():
+    if request.method == 'POST':
+        name = request.form['name']
+        photo = request.form['photo']
+        allergens = request.form['allergens']
+        calories = request.form['calories']
+        fat = request.form['fat']
+        carbohydrates = request.form['carbohydrates']
+        proteins = request.form['proteins']
+        fiber = request.form['fiber']
+        sugar = request.form['sugar']
+        salt = request.form['salt']
+        approved = 0
+
+        conn = create_connection_products()
+        cursor = conn.cursor()
+
+        cursor.execute('''
+                SELECT * FROM products
+                WHERE name = ? AND photo = ? AND allergens = ? AND calories = ?
+                AND fat = ? AND carbohydrates = ? AND proteins = ? AND fiber = ?
+                AND sugar = ? AND salt = ?
+            ''', (name, photo, allergens, calories, fat, carbohydrates, proteins, fiber, sugar, salt))
+        duplicate_products = cursor.fetchall()
+        if len(duplicate_products) >= 2:
+            approved = 1
+        
+        try:
+            cursor.execute('''
+                INSERT INTO products (name, photo, allergens, calories, fat, carbohydrates, proteins, fiber, sugar, salt, approved)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (name, photo, allergens, calories, fat, carbohydrates, proteins, fiber, sugar, salt, approved))
+            conn.commit()
+            print("Product added successfully.")
+        except sqlite3.Error as e:
+            print("Error adding product:", e)
+        finally:
+            conn.close()
+
+        return home()
+
+       
+@app.route('/new_product')
+def new_product():
     if 'username' in session:
+        username = session['username']
         loggedIn = True
-        return render_template('home.html', username=session['username'], loggedIn=loggedIn, cart_elements=cart_elements)
-    else:
-        return render_template('home.html', loggedIn=False, cart_elements=cart_elements)
+    else: loggedIn = False
+    return render_template('submit_new_product.html', username=username, loggedIn=loggedIn)
 
-@app.route('/register')
-def register():
-    return render_template('register.html')
+@app.route('/check_submissions')
+def check_subsmissions():
+    if 'username' in session:
+        username = session['username']
+        loggedIn = True
+    else: loggedIn = False
+    conn = create_connection_products()
+    cursor = conn.cursor()
 
-@app.route('/login')
-def login():
-    return render_template('login.html')
+    try:
+        cursor.execute("SELECT * FROM products")
+        products = cursor.fetchall()
+        print("Products:", products)
+        return render_template('submissions.html', products=products, username=username, loggedIn=loggedIn)
+    except sqlite3.Error as e:
+        print("Error retrieving products:", e)
+    finally:
+        conn.close()
 
+def update_product_approval(product_id):
+    with create_connection_products() as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE products SET approved = 1 WHERE id = ?", (product_id,))
+        conn.commit()
+
+@app.route('/submit_product', methods=['POST'])
+def submit_product():
+    if request.method == 'POST':
+        product_id = request.form.get('product_id')
+        
+        update_product_approval(product_id)
+        
+        return home()
 
 def printDB():
-    conn = create_connection()
+    conn = create_connection_users()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM users")
     rows = cursor.fetchall()
@@ -352,11 +461,35 @@ def printDB():
     print("Data in the users table:")
     for row in rows:
         print(row)
+    
+    conn = create_connection_products()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM products")
+    rows = cursor.fetchall()
+    conn.close()
+    print("Data in the products table:")
+    for row in rows:
+        print(row)
 
-conn = create_connection()
+conn = create_connection_users()
 create_users_table(conn)
-printDB()
 conn.close()
+
+conn = create_connection_products()
+create_table_products(conn)
+conn.close()
+
+printDB()
+
+def create_connection_users():
+    conn = None
+    try:
+        conn = sqlite3.connect('user_credentials.sql')
+        print("SQLite Database Connection Established")
+        return conn
+    except sqlite3.Error as e:
+        print(e)
+    return conn
 
 @app.route('/register_action', methods=['POST'])
 def register_action():
@@ -368,11 +501,9 @@ def register_action():
         email = request.form['email']
         dietary_preferences = request.form['dietary_preferences']
         allergens = request.form['allergens']
-        avatar = request.form['avatar']
+        admin = 0
+        conn = create_connection_users()
 
-        conn = create_connection()
-
-        # Check if the username already exists
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
         existing_user = cursor.fetchone()
@@ -383,8 +514,7 @@ def register_action():
             return render_template('registerUserAlreadyExists.html', username=username)
         else:
             try:
-                # Insert data into the users table
-                cursor.execute("INSERT INTO users (username, password, firstName, lastName, email, dietary_preferences, allergens, avatar) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (username, password, firstName, lastName, email, dietary_preferences, allergens, avatar))
+                cursor.execute("INSERT INTO users (username, password, firstName, lastName, email, dietary_preferences, allergens, admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (username, password, firstName, lastName, email, dietary_preferences, allergens, admin))
                 conn.commit()
             except sqlite3.Error as e:
                 conn.rollback()
@@ -400,33 +530,28 @@ def register_action():
 # Route to handle login submissions and verify the data in the database
 @app.route('/login_action', methods=['POST'])
 def login_action():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+    username = request.form['username']
+    password = request.form['password']
 
-        # Connect to the database
-        conn = create_connection()
+    conn = create_connection_users()
 
-        # Create the users table if it doesn't exist
-        create_users_table(conn)
+    create_users_table(conn)
 
-        # Check if the username exists and the password matches
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-        existing_user = cursor.fetchone()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+    existing_user = cursor.fetchone()
 
-        if existing_user:
-            # If the username exists, check if the password matches
-            if password == existing_user[2]:
-                conn.close()
-                printDB()
-                session['username'] = username
-                return home()
-            else:
-                conn.close()
-                flash('Incorrect username or password. Please try again.', 'error')
-                printDB()
-                return render_template('login.html')
+    if existing_user:
+        if password == existing_user[2]:
+            conn.close()
+            printDB()
+            session['username'] = username
+            return home()
+        else:
+            conn.close()
+            flash('Incorrect username or password. Please try again.', 'error')
+            printDB()
+            return render_template('login.html')
 
     else:
         return 'Method not allowed'
@@ -436,7 +561,7 @@ def logOut():
     session.clear()
     return render_template('redirect.html')
 
-@app.route('/change_info_action', methods=['POST'])
+@app.route('/change_info_action')
 def changeInfo():
     new_firstName = request.form['newFirstName']
     new_lastName = request.form['newLastName']
@@ -444,20 +569,20 @@ def changeInfo():
     new_allergens = request.form['newAllergens']
     new_dietary_preferences = request.form['newDietary_preferences']
     new_allergens = request.form['newAllergens']
-    new_avatar = request.form['newAvatar']
+    new_approved = 0
         
     # Check if the user is logged in
     if 'username' in session:
         username = session['username']
             
         # Connect to the database
-        conn = create_connection()
+        conn = create_connection_users()
         cursor = conn.cursor()
             
         try:
             # Update the user's information in the database
-            cursor.execute("UPDATE users SET firstName=?, lastName=?, username=?, allergens=?, dietary_preferences=?, avatar=? WHERE username=?", 
-                            (new_firstName, new_lastName, new_username, new_allergens, new_dietary_preferences, new_avatar, username))
+            cursor.execute("UPDATE users SET firstName=?, lastName=?, username=?, allergens=?, dietary_preferences=?, approved=? WHERE username=?", 
+                            (new_firstName, new_lastName, new_username, new_allergens, new_dietary_preferences, new_approved, username))
             conn.commit()
             message = "User information updated successfully"
             print(message)
@@ -481,20 +606,51 @@ def myaccount():
     if 'username' in session:
         username = session['username']
 
-        conn = create_connection()
+        conn = create_connection_users()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT firstName, lastName, username, allergens, dietary_preferences, avatar FROM users WHERE username=?", (username,))
+        cursor.execute("SELECT firstName, lastName, username, allergens, dietary_preferences FROM users WHERE username=?", (username,))
         user_data = cursor.fetchone()  # Fetch the first row
         if user_data:
-            firstName, lastName, username, allergens, dietary_preferences, avatar = user_data
+            firstName, lastName, username, allergens, dietary_preferences = user_data
             print(firstName)
             print(lastName)
             print(username)
             print(allergens)
             print(dietary_preferences)
 
-            return render_template('myaccount.html', firstName=firstName, lastName=lastName, username=username, allergens=allergens, dietary_preferences=dietary_preferences, avatar=avatar, cart_elements=cart_elements)
-        
+            return render_template('myaccount.html', firstName=firstName, lastName=lastName, username=username, allergens=allergens, dietary_preferences=dietary_preferences, cart_elements=cart_elements)
+
+@app.route('/')
+def home():
+    admin = False
+
+    if 'cart' not in session:
+        session['cart'] = {}
+    cart_elements = len(session['cart'])
+    if 'username' in session:
+        loggedIn = True
+        username = session['username']
+        conn = create_connection_users()
+        create_users_table(conn)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            if existing_user[8] == 1:
+                admin = True
+        return render_template('home.html', username=session['username'], loggedIn=loggedIn, cart_elements=cart_elements, admin=admin)
+    else:
+        return render_template('home.html', loggedIn=False, cart_elements=cart_elements, admin=admin)
+
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
