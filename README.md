@@ -1,5 +1,7 @@
 Echipa Albinutelor
+
 Membri: Merticariu Vlad, Platon Cristian, Ionescu Denis
+
 Video Prezentare: https://youtu.be/phrY4NLbotc
 
 commands to run:
