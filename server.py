@@ -339,6 +339,7 @@ def create_table_products(conn):
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS products (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user TEXT,
                 name TEXT,
                 photo TEXT,
                 allergens TEXT,
@@ -385,21 +386,23 @@ def new_product_action():
         conn = create_connection_products()
         cursor = conn.cursor()
 
+        user = session['username']
+
         cursor.execute('''
                 SELECT * FROM products
-                WHERE name = ? AND photo = ? AND allergens = ? AND calories = ?
+                WHERE name = ? AND photo = ? AND user = ? AND allergens = ? AND calories = ?
                 AND fat = ? AND carbohydrates = ? AND proteins = ? AND fiber = ?
                 AND sugar = ? AND salt = ?
-            ''', (name, photo, allergens, calories, fat, carbohydrates, proteins, fiber, sugar, salt))
+            ''', (name, photo, user, allergens, calories, fat, carbohydrates, proteins, fiber, sugar, salt))
         duplicate_products = cursor.fetchall()
         if len(duplicate_products) >= 2:
             approved = 1
         
         try:
             cursor.execute('''
-                INSERT INTO products (name, photo, allergens, calories, fat, carbohydrates, proteins, fiber, sugar, salt, approved)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (name, photo, allergens, calories, fat, carbohydrates, proteins, fiber, sugar, salt, approved))
+                INSERT INTO products (name, photo, user, allergens, calories, fat, carbohydrates, proteins, fiber, sugar, salt, approved)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (name, photo, user, allergens, calories, fat, carbohydrates, proteins, fiber, sugar, salt, approved))
             conn.commit()
             print("Product added successfully.")
         except sqlite3.Error as e:
@@ -571,16 +574,13 @@ def changeInfo():
     new_allergens = request.form['newAllergens']
     new_approved = 0
         
-    # Check if the user is logged in
     if 'username' in session:
         username = session['username']
             
-        # Connect to the database
         conn = create_connection_users()
         cursor = conn.cursor()
             
         try:
-            # Update the user's information in the database
             cursor.execute("UPDATE users SET firstName=?, lastName=?, username=?, allergens=?, dietary_preferences=?, approved=? WHERE username=?", 
                             (new_firstName, new_lastName, new_username, new_allergens, new_dietary_preferences, new_approved, username))
             conn.commit()
@@ -594,7 +594,60 @@ def changeInfo():
             conn.close()
     return myaccount()
 
-# Redirect route
+def get_user_products(user):
+    conn = create_connection_products()
+    cursor = conn.cursor()
+    user_products = []
+
+    try:
+        cursor.execute("SELECT * FROM products WHERE user=?", (user,))
+        user_products = cursor.fetchall()
+    except sqlite3.Error as e:
+        print(f"Error retrieving products for user '{user}': {e}")
+    finally:
+        conn.close()
+
+    return user_products
+
+@app.route('/change_submissions')
+def change_submissions():
+    session_user = session['username']
+    user_products = get_user_products(session_user)
+    return render_template('change_submissions.html', user_products=user_products)
+
+
+@app.route('/change_submissions_action', methods=['POST'])
+def change_submissions_action():
+    new_name = request.form['newName']
+    new_allergens = request.form['newAllergens']
+    new_calories = request.form['newCalories']
+    new_fat = request.form['newFat']
+    new_carbohydrates = request.form['newCarbohydrates']
+    new_proteins = request.form['newProteins']
+    new_fiber = request.form['newFiber']
+    new_sugar = request.form['newSugar']
+    new_salt = request.form['newSalt']
+    id = request.form['id']
+
+    conn = create_connection_products()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            UPDATE products 
+            SET name=?, allergens=?, calories=?, fat=?, carbohydrates=?, proteins=?, fiber=?, sugar=?, salt=?
+            WHERE id=?
+        """, (new_name, new_allergens, new_calories, new_fat, new_carbohydrates, new_proteins, new_fiber, new_sugar, new_salt, id))
+        conn.commit()
+        print("Product information updated successfully")
+    except sqlite3.Error as e:
+        conn.rollback()
+        print(f"Error updating product information: {e}")
+    finally:
+        conn.close()
+    return home()
+    
+
+
 @app.route('/redirect')
 def redirect():
     return render_template('redirect.html')
@@ -610,7 +663,7 @@ def myaccount():
         cursor = conn.cursor()
 
         cursor.execute("SELECT firstName, lastName, username, allergens, dietary_preferences FROM users WHERE username=?", (username,))
-        user_data = cursor.fetchone()  # Fetch the first row
+        user_data = cursor.fetchone()
         if user_data:
             firstName, lastName, username, allergens, dietary_preferences = user_data
             print(firstName)
