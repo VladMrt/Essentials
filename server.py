@@ -194,11 +194,11 @@ def addToCart():
             sugar = 'N/A'
             salt = 'N/A'
 
-            if 'username' in session:
-                loggedIn = True
-            else: loggedIn = False
+        if 'username' in session:
+            loggedIn = True
+        else: loggedIn = False
 
-            return render_template('product_details.html',product_id=product_id , name=name, ingredients=ingredients, nutrition=nutrition, image=image, loggedIn=loggedIn, username=session.get('username'), allergens=allergens, calories=calories, fat=fat, carbohydrates=carbohydrates, proteins=proteins, fiber=fiber, sugar=sugar, salt=salt, cart_elements=cart_elements)
+        return render_template('product_details.html',product_id=product_id , name=name, ingredients=ingredients, nutrition=nutrition, image=image, loggedIn=loggedIn, username=session.get('username'), allergens=allergens, calories=calories, fat=fat, carbohydrates=carbohydrates, proteins=proteins, fiber=fiber, sugar=sugar, salt=salt, cart_elements=cart_elements)
     else: 
         if request.form.get('item_id_product_search'):
             product_id = request.form.get('item_id_product_search')
